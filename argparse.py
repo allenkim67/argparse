@@ -26,8 +26,30 @@ schema = {
 
 
 import sys
+from validators import validate_argv
 
 
 def parse(schema):
     argv = sys.argv
+
+    if len(argv) == 2 and argv[1] in ['-h', '--help']:
+        _show_help(schema)
+
+    try:
+        validate_argv(schema, argv)
+    except:
+        _show_error()
+
+    return _parse(schema, argv)
+
+
+def _show_help(schema):
+    pass
+
+
+def _show_error():
+    pass
+
+
+def _parse(schema, argv):
     pass
