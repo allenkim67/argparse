@@ -44,6 +44,23 @@ def parse(schema):
 
 
 def _show_help(schema):
+    parts = [_usage(schema),
+             schema.get('description'),
+             _positional_args(schema),
+             _optional_args(schema)]
+
+    return '\n\n'.join([p for p in parts if p])
+
+
+def _usage(schema):
+    pass
+
+
+def _positional_args(schema):
+    pass
+
+
+def _optional_args(schema):
     pass
 
 

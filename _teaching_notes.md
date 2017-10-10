@@ -1,30 +1,21 @@
 **argparse.py**
 
-As mentioned we want our `parse` function to do three things:
+Our help menu has 4 parts:
 
-1. If passed an -h or --help command we want to show a help menu.
-2. If we get incorrectly formatted input we should show an error and usage message.
-3. Otherwise we should return the parsed data.
+1. Usage
+2. Description
+3. Positional Arguments
+4. Optional Arguments
 
-Checking if -h or --help command is simple enough to code in directly, but
-everything else is complex enough that we'll want to create new functions. By
-creating new functions with good names it becomes easy to see what we intend the
-`parse` function to do. It also allows us to break a larger problem down into
-simpler problems.
-
-You might be wondering why we have function names that start with a `_`. This is
-to distinguish between private and public variables. If we imagine that someone
-is going to be using our argparse module, then `parse` is really the only
-function that we want them to use. The private functions aren't intended to be
-used by the public so they're marked with the `_` prefix.
-
-If you don't know how `try` and `except`, you should have a better idea by the
-end of this tutorial.
+Description is simple enough to code directly, just get it from the schema. The
+other 3 parts are too complex so we create new functions for them. It's possible
+that the schema won't have a description or positional arguments (optional
+arguments will have at least --help), so we use the `if p` part of the list
+comprehension to keep only the parts that exist and put join the parts with an
+empty line.
 
 ##### Follow Along
 
-We need to implement our new functions. We'll start at the top with the
-`_show_help` function. The help menu should look like this. I recommend breaking
-up the help menu into parts. What would the parts be and how would you code it?
-
-##### References
+We'll need to implement our new methods, starting with `_usage`. Remember that
+usage looks like this. Do you think `_usage` can fit in one function? If not
+how would you break it up?
