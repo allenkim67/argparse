@@ -27,13 +27,14 @@ schema = {
 
 import sys
 from validators import validate_argv
+from help_menu import help_menu
 
 
 def parse(schema):
     argv = sys.argv
 
     if len(argv) == 2 and argv[1] in ['-h', '--help']:
-        _show_help(schema)
+        _show_help(schema, argv[0])
 
     try:
         validate_argv(schema, argv)
@@ -43,25 +44,9 @@ def parse(schema):
     return _parse(schema, argv)
 
 
-def _show_help(schema):
-    parts = [_usage(schema),
-             schema.get('description'),
-             _positional_args(schema),
-             _optional_args(schema)]
-
-    return '\n\n'.join([p for p in parts if p])
-
-
-def _usage(schema):
-    pass
-
-
-def _positional_args(schema):
-    pass
-
-
-def _optional_args(schema):
-    pass
+def _show_help(schema, prog):
+    print(help_menu(schema, prog))
+    sys.exit()
 
 
 def _show_error():
