@@ -14,7 +14,23 @@ def _usage(schema, prog):
 
 
 def _optional_args_usage(o_args):
-    pass
+    o_args_usage = []
+
+    for o_arg in o_args:
+        if isinstance(o_arg['name'], str):
+            arg_str = o_arg['name']
+        elif isinstance(o_arg['name'], list):
+            arg_str = sorted(o_arg['name'])[1]
+
+        if o_arg.get('param'):
+            arg_str = f'{arg_str}={o_arg["param"].upper()}'
+
+        if not o_arg.get('required'):
+            arg_str = f'[{arg_str}]'
+
+        o_args_usage.append(arg_str)
+
+    return ' '.join(o_args_usage)
 
 
 def _positional_args_usage(p_args):
