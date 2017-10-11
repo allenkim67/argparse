@@ -1,52 +1,36 @@
 **validators.py**
 
-To implement `_no_invalid_o_args` we need to:
+After some thought, there's two ways to cause an error with positional arguments:
 
-1. Get a list of only the optional arguments, with positional arguments removed.
-2. Check each argument to see if it's valid.
+1. pass too many arguments
+2. pass too few arguments
 
-Here are the requirements for a valid optional argument:
+So I've create new functions `_under_max_p_args` and `_over_min_p_args` accordingly.
 
-1. The name of the argument must be in the schema.
-2. If there is a `param` property, there should be value assigned.
-3. If there is no `param` property, there should be no value assigned.
+For `_under_max_p_args`:
 
-I've added a convenience function `_find_o_arg_by_name`. In order to check if an
-argument is valid we use its name and try to look it up in the schema.
+1. If there is any n_arg equal to '*' or '+' then there can be no maximum, so
+just return.
 
-I've also create a new subclass of `Exception` called `InvalidOptionalArgs`. When
-we find an invalid argument we can raise this exception with the `raise` keyword.
-What does this do? If you look inside `argparse.py`, you can see that we call
-`validate_argv` inside a `try` block. That means any time an exception is raised
-during the execution of `validate_argv` the code will immediately jump into the
-`except` block.
+2. Otherwise calculate the maximum arguments. So `max_args` is the sum of all
+`n_args` where no `n_arg` property defaults to 1, and '?' will be at most 1.
 
-What is the benefit of doing things this way?
+3. If the number of passed positional arguments is greater than the max, raise
+`InvalidPositionalArgs` error. This is also a subclass of `Exception`.
 
-The main benefit is that no matter where you are in the execution of a `try`
-block, any raised exception will immediately jump you to the `except` block.
-Think about how you would do this without `try` and `except`.
+For `_over_min_p_args`:
 
-Another benefit is that by subclassing
-`Exception` we can get access to a stacktrace from when the error occured (although
-we won't be using this in our project). This is just one of the features of the
-`Exception` class which is a built-in class.
+1. Calculate the minimum number of arguments required. '*' and '?' can both be
+zero so they don't increase the minimum. So `min_args` is the sum of all `n_args`
+where no `n_arg` property defaults to 1 and '+' requires at least 1.
 
-Because exceptions are usually checked by their class name all we have to do is
-subclass `Exception` and `pass` in the body. This is a common pattern, but you
-could also add things in the body, for example a logger to log when this error
-is raised.
+2. If the number of passed positional arguments is less than the minimum, raise
+`InvalidPositionalArgs` error.
 
-Later we'll see that we can access the error object in the `except` block and
-from there we can access the error message.
+At this point I realized that this covers all error cases related to positional
+arguments so I removed the `_required_p_args_exist` function.
 
 ##### Follow Along
 
-Next let's move on to `_no_invalid_p_args`. This one is a little bit trickier.
-How do we know whether a positional argument is invalid or not? What are the
-different cases of invalid argument?
-
-
-##### References
-
-[Python 3 Docs: Errors and Exceptions](https://docs.python.org/3/tutorial/errors.html)
+The last method in our validator is `_required_o_args_exist`. We need to look
+through all the required optional arguments and see if any of them are missing.

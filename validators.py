@@ -1,11 +1,10 @@
-from exceptions import InvalidOptionalArgs
+from exceptions import InvalidOptionalArgs, InvalidPositionalArgs
 
 
 def validate_argv(schema, argv):
     _no_invalid_o_args(schema, argv)
-    _no_invalid_p_args()
+    _no_invalid_p_args(schema, argv)
     _required_o_args_exist()
-    _required_p_args_exist()
 
 
 def _find_o_arg_by_name(schema, name):
@@ -31,13 +30,32 @@ def _no_invalid_o_args(schema, argv):
             raise InvalidOptionalArgs(f'Optional Argument "{name}" should have no parameter')
 
 
-def _no_invalid_p_args():
-    pass
+def _no_invalid_p_args(schema, argv):
+    p_args = [a for a in argv[1:] if not a.startswith('-')]
+    schema_p_args = schema.get('positional_args') or []
+
+    _under_max_p_args(schema_p_args, p_args)
+    _over_min_p_args(schema_p_args, p_args)
+
+
+def _under_max_p_args(schema_p_args, p_args):
+    if any(a.get('n_args') in ['*', '+'] for a in schema_p_args): return
+
+    max_args = sum([1 if a.get('n_args') in [None, '?'] else a['n_args']
+                    for a in schema_p_args])
+
+    if len(p_args) > max_args:
+        raise InvalidPositionalArgs(f'Too many positional arguments')
+
+
+def _over_min_p_args(schema_p_args, p_args):
+    min_args = sum([1 if a.get('n_args') in [None, '+'] else a['n_args']
+                    for a in schema_p_args
+                    if not a.get('n_args') in ['*', '?']])
+
+    if len(p_args) < min_args:
+        raise InvalidPositionalArgs(f'Missing one or more required positional arguments')
 
 
 def _required_o_args_exist():
-    pass
-
-
-def _required_p_args_exist():
     pass
