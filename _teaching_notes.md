@@ -1,36 +1,26 @@
 **validators.py**
 
-After some thought, there's two ways to cause an error with positional arguments:
+In `_required_o_args_exist` we just need to loop through the schema's optional
+arguments that have a `required` property as `True` and see if it's name is in
+the list of command line arguments passed by the user.
 
-1. pass too many arguments
-2. pass too few arguments
+There's only two tricky parts to this:
 
-So I've create new functions `_under_max_p_args` and `_over_min_p_args` accordingly.
+1. The user passed optional arguments might look like this: `--oarg=FOO` when
+we really just want the part before the `=`. We can do this by splitting on
+`=` and taking the first element. This will work even if there is no `=` in the
+string.
 
-For `_under_max_p_args`:
-
-1. If there is any n_arg equal to '*' or '+' then there can be no maximum, so
-just return.
-
-2. Otherwise calculate the maximum arguments. So `max_args` is the sum of all
-`n_args` where no `n_arg` property defaults to 1, and '?' will be at most 1.
-
-3. If the number of passed positional arguments is greater than the max, raise
-`InvalidPositionalArgs` error. This is also a subclass of `Exception`.
-
-For `_over_min_p_args`:
-
-1. Calculate the minimum number of arguments required. '*' and '?' can both be
-zero so they don't increase the minimum. So `min_args` is the sum of all `n_args`
-where no `n_arg` property defaults to 1 and '+' requires at least 1.
-
-2. If the number of passed positional arguments is less than the minimum, raise
-`InvalidPositionalArgs` error.
-
-At this point I realized that this covers all error cases related to positional
-arguments so I removed the `_required_p_args_exist` function.
+2. Once we have the argument name we can search through the schema, but we have
+to take into account that some optional argument's name property can be either
+a list or a string. I get around this problem by putting the string in a list if
+name is a string. Then I can just check for membership in that list.
 
 ##### Follow Along
 
-The last method in our validator is `_required_o_args_exist`. We need to look
-through all the required optional arguments and see if any of them are missing.
+With that, we're done with the validation functions. If there is an error in the
+command line arguments passed by the user we should see an exception get raised.
+Now we can go back to `argparse.py` and finish our `show_error` function. One
+hint I'll give is that we want to show the proper usage in our error message
+and we already have a function for that in `help_menu.py`. Can we reuse this
+function?

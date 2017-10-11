@@ -4,7 +4,7 @@ from exceptions import InvalidOptionalArgs, InvalidPositionalArgs
 def validate_argv(schema, argv):
     _no_invalid_o_args(schema, argv)
     _no_invalid_p_args(schema, argv)
-    _required_o_args_exist()
+    _required_o_args_exist(schema, argv)
 
 
 def _find_o_arg_by_name(schema, name):
@@ -57,5 +57,11 @@ def _over_min_p_args(schema_p_args, p_args):
         raise InvalidPositionalArgs(f'Missing one or more required positional arguments')
 
 
-def _required_o_args_exist():
-    pass
+def _required_o_args_exist(schema, argv):
+    o_args = schema.get('optional_args') or []
+    argv_names = [a.split('=')[0] for a in argv]
+    for o_arg in [a for a in o_args if a.get('required')]:
+        n = o_arg['name']
+        names = n if isinstance(n, list) else [n]
+        if not any(name in argv_names for name in names):
+            raise InvalidOptionalArgs(f'Optional arg "{sorted(names)[0]}" is required')
