@@ -65,4 +65,30 @@ def _positional_args(schema):
 
 
 def _optional_args(schema):
-    pass
+    o_args = _add_help_arg(schema['optional_args'])
+    o_args_str = '\n'.join([_o_arg_and_description(o_arg) for o_arg in o_args])
+    return f'optional arguments:\n{o_args_str}'
+
+
+def _add_help_arg(schema_o_args):
+    help_arg = {'name': ['-h', '--help'],
+                'description': 'show this help message and exit'}
+    return [help_arg, *schema_o_args]
+
+
+def _o_arg_and_description(o_arg):
+    if isinstance(o_arg['name'], str):
+        o_arg_str = _o_arg_and_param(o_arg['name'], o_arg)
+
+    elif isinstance(o_arg['name'], list):
+        o_arg_str = ', '.join(_o_arg_and_param(name, o_arg)
+                              for name in o_arg['name'])
+
+    return f'{o_arg_str}\t\t{o_arg.get("description")}'
+
+
+def _o_arg_and_param(name, o_arg):
+    if o_arg.get('param'):
+        return f'{name}={o_arg["param"].upper()}'
+    else:
+        return name
