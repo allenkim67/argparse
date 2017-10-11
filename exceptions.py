@@ -1,0 +1,2 @@
+class InvalidOptionalArgs(Exception):
+    pass
