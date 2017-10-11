@@ -1,6 +1,10 @@
-class InvalidOptionalArgs(Exception):
+class ArgparseError(Exception):
     pass
 
 
-class InvalidPositionalArgs(Exception):
+class InvalidOptionalArgs(ArgparseError):
+    pass
+
+
+class InvalidPositionalArgs(ArgparseError):
     pass

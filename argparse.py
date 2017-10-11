@@ -27,7 +27,8 @@ schema = {
 
 import sys
 from validators import validate_argv
-from help_menu import help_menu
+from exceptions import ArgparseError
+from help_menu import help_menu, usage
 
 
 def parse(schema):
@@ -38,8 +39,8 @@ def parse(schema):
 
     try:
         validate_argv(schema, argv)
-    except:
-        _show_error()
+    except ArgparseError as e:
+        _show_error(e, schema, argv[0])
 
     return _parse(schema, argv)
 
@@ -49,8 +50,10 @@ def _show_help(schema, prog):
     sys.exit()
 
 
-def _show_error():
-    pass
+def _show_error(error, schema, prog):
+    print(usage(schema, prog))
+    print(f'{prog}: error: {error}')
+    sys.exit()
 
 
 def _parse(schema, argv):
