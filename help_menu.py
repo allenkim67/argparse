@@ -54,7 +54,14 @@ def _p_arg_usage(p_arg):
 
 
 def _positional_args(schema):
-    pass
+    p_args = schema.get('positional_args')
+
+    if not p_args or len(p_args) == 0: return None
+
+    p_args_str = '\n'.join([f'{arg["name"].upper()}\t\t{arg.get("description")}'
+                            for arg in p_args])
+
+    return f'positional arguments:\n{p_args_str}'
 
 
 def _optional_args(schema):
