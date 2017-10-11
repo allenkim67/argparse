@@ -34,7 +34,23 @@ def _optional_args_usage(o_args):
 
 
 def _positional_args_usage(p_args):
-    pass
+    return ' '.join([_p_arg_usage(p_arg) for p_arg in p_args])
+
+
+def _p_arg_usage(p_arg):
+    name = p_arg['name'].upper()
+
+    if not p_arg.get('n_args'):
+        return name
+    else:
+        if p_arg['n_args'] == '?':
+            return f'[{name}]'
+        elif p_arg['n_args'] == '*':
+            return f'[{name}...]'
+        elif p_arg['n_args'] == '+':
+            return f'{name} [{name}...]'
+        else:
+            return ' '.join([name] * p_arg['n_args'])
 
 
 def _positional_args(schema):

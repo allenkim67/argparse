@@ -1,35 +1,30 @@
 **help_menu.py**
 
-When implementing `_optional_args_usage`:
+The `_positional_args_usage` function is very similar to the previous function
+`_optional_args_usage` except with different rules for formatting each argument.
+In this case it depends mostly on its `n_args` property:
 
-1. We want to loop through each optional argument in the schema.
-2. For each argument we want to get the name. If there's a short and long name,
-then we want to default to the short name.
-3. If there's a `param` property we want to add an `=` and the name of the param
-in all-caps.
-4. Unless the property is required, we want to wrap it in square brackets.
-5. We want to join each argument into a single string separated by a space.
+1. If `n_args` is not set, then default to showing the name once.
+2. If `n_args` is '?' wrap in square brackets.
+3. If `n_args` is '*' wrap in square brackets and add `...`.
+4. If `n_args` is '+' show the name once and then wrap in square brackets and then add `...`.
+5. If `n_args` is a number then show name that many times.
 
-Finally we've reached a point where we can code everything without creating new
-functions. If you read the code carefully you'll see that our code follows the
-above requirements quite closely.
+Another difference here compared to `_optional_args_usage` is that I've chosen
+to add a second function. One function handles looping and joining, and another
+is used during each iteration. Try comparing with `_optional_args_usage` and see
+that both approaches do about the same thing.
+
+You also might be wondering what it means to multiply a list by a number. Multiplying
+a list is the same as appending a list to itself that many times. For example:
+
+```
+[1, 2, 3] * 3 == [1, 2, 3, 1, 2, 3, 1, 2, 3]
+```
 
 ##### Follow Along
 
-Next let's go back to the `_positional_args_usage` function. Let's look at the
-usage example again. For positional args we can see a list of all-caps names.
-The formatting of these arguments will depend on the `n_args` property from the
-schema.
-
-If the property is not set `n_args` defaults to 1, so if n_args is an integer
-we repeat that argument `n_arg` times. But if it's one of `'*'`, `'+'`, or `'?'`
-then it needs to be handled differently. Remember, `'*'` means 0 or more,
-`'+'` means 1 or more, `'?'` means 1 or 0.
-
-Square brackets indicate the argument is optional. `...` indicates 0 or more of
-that argument. So for `'*'` we can use `...`. For '?' we can use square brackets.
-For `'+'` we can use a combination of both like this: PARG [PARG...].
-
-##### References
-
-[What's the canonical way to check for type in python?](https://stackoverflow.com/questions/152580/whats-the-canonical-way-to-check-for-type-in-python)
+Now let's go back and add the `_positional_args` function which adds that part
+into the help menu. Here's a reminder of what that part looks like. You can see
+it's just a header and a listing of the name of the positional argument and its
+description.
