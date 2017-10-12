@@ -29,7 +29,18 @@ def _passed_o_args(schema_o_args, argv):
 
 
 def _unpassed_o_args(schema_o_args, argv):
-    pass
+    unpassed_o_args = {}
+    argv_names = [a.split('=')[0] for a in argv]
+
+    for schema_arg in schema_o_args:
+        n = schema_arg['name']
+        names = n if isinstance(n, list) else [n]
+
+        if not any(name in argv_names for name in names):
+            name = sorted(names)[0]
+            unpassed_o_args[name] = False
+
+    return unpassed_o_args
 
 
 def _positional_args(schema, argv):
