@@ -1,4 +1,5 @@
 from exceptions import InvalidOptionalArgs, InvalidPositionalArgs
+from schema_util import find_o_arg_by_name
 
 
 def validate_argv(schema, argv):
@@ -7,20 +8,11 @@ def validate_argv(schema, argv):
     _required_o_args_exist(schema, argv)
 
 
-def _find_o_arg_by_name(schema, name):
-    o_args = schema.get('optional_args') or []
-    for o_arg in o_args:
-        match_str = isinstance(o_arg['name'], str) and name == o_arg['name']
-        match_list = isinstance(o_arg['name'], list) and name in o_arg['name']
-        if match_str or match_list:
-            return o_arg
-    return None
-
-
 def _no_invalid_o_args(schema, argv):
     for arg in [a for a in argv if a.startswith('-')]:
+        schema_o_args = schema.get('optional_args') or []
         name = arg.split('=')[0]
-        o_arg = _find_o_arg_by_name(schema, name)
+        o_arg = find_o_arg_by_name(schema_o_args, name)
 
         if not o_arg:
             raise InvalidOptionalArgs(f'Optional Argument "{arg}" does not exist')
